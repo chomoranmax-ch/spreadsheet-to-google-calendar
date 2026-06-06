@@ -1,0 +1,2 @@
+# spreadsheet-to-google-calendar
+コピペで完成！Googleスプレッドシートの予定をボタン一つでGoogleカレンダーへ高速同期するGASプログラムです。【YouTube解説動画あり】

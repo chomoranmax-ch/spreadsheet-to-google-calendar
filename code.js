@@ -1,6 +1,5 @@
 /**
  * スプレッドシートの予定をGoogleカレンダーに同期するメイン関数
- * スプレッドシートの上部カスタムメニューから実行されます
  */
 function syncGoogleCalendar() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -54,7 +53,7 @@ function syncGoogleCalendar() {
     var location     = row[7] || '';             // H列
     var tg_id        = row[8].toString().trim(); // I列: 管理ID
 
-    // タイトルが空ならスキップ
+    // タイトルが空ならスクラップ行としてスキップ
     if (!title) continue;
 
     // 日付オブジェクトの解析（曜日入り文字列にも対応）
@@ -112,7 +111,10 @@ function syncGoogleCalendar() {
         const adjustedEndDate = new Date(endDateTime.getFullYear(), endDateTime.getMonth(), endDateTime.getDate() + 1);
         existingEvent.setAllDayDates(startDateTime, adjustedEndDate);
       } else {
-        existingEvent.setTime(startDateTime, endDateTime);
+        // ★改善ポイント: 一度既存の予定が終日モードになっていた場合を想定し、
+        // 1分間だけのダミー時刻を指定して「終日モード」を確実に強制解除してから、正しい時刻をセットする
+        existingEvent.setTime(startDateTime, new Date(startDateTime.getTime() + 60000)); 
+        existingEvent.setTime(startDateTime, endDateTime); // 正しい開始・終了時刻をセット
       }
       console.log(`行 ${currentRowNum}: 予定を更新しました。 (ID: ${tg_id})`);
 
@@ -120,7 +122,6 @@ function syncGoogleCalendar() {
       // 【新規作成】カレンダーに予定がない場合
       let newEvent;
       if (isAllDay) {
-        // 終日の場合は終了日を+1日する（Googleカレンダーの仕様対策）
         const adjustedEndDate = new Date(endDateTime.getFullYear(), endDateTime.getMonth(), endDateTime.getDate() + 1);
         newEvent = calendar.createAllDayEvent(title, startDateTime, adjustedEndDate, options);
       } else {

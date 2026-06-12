@@ -5,10 +5,10 @@ function syncGoogleCalendar() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getActiveSheet();
   
-  // 1. 1行目・A1セルからカレンダーIDを取得
-  const calendarId = sheet.getRange(1, 1).getValue().toString().trim();
+  // 1. 1行目・B1セルからカレンダーIDを取得
+  const calendarId = sheet.getRange(1, 2).getValue().toString().trim();
   if (!calendarId || !calendarId.includes('@')) {
-    SpreadsheetApp.getUi().alert("エラー: 1行目A列(A1セル)に正しいGoogleカレンダーIDを入力してください。");
+    SpreadsheetApp.getUi().alert("エラー: 1行目B列(B1セル)に正しいGoogleカレンダーIDを入力してください。");
     return;
   }
   
